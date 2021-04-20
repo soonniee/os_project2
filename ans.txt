@@ -1,0 +1,4 @@
+input : p1,p2
+input1 : no dead
+input2 : p1,p2
+input6 : p1,p2,p3
