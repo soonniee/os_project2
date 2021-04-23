@@ -5,8 +5,8 @@
 using namespace std;
 int num_process, num_resource;
 vector<int> resourceUnits;
-vector<vector<pair<int,int>>> requested;
-vector<vector<pair<int,int>>> allocated;
+vector<vector<int>> requested;
+vector<vector<int>> allocated;
 vector<int> sum_allocated;
 void input(){
     
@@ -18,59 +18,51 @@ void input(){
         int resource_unit;
         fscanf(fp,"%d",&resource_unit);
         resourceUnits.push_back(resource_unit);
+        sum_allocated.push_back(0);
     }
-    
-    // for(int i=0;i<num_process;i++){
-    //     vector<pair<int,int>> elem;
-    //     elem.resize(num_resource);
-    //     allocated.push_back(elem);
-    // }
-    for(int i =0;i<num_resource;i++) sum_allocated.push_back(0);
+
     for(int i=0;i<num_process;i++){
-        vector<pair<int,int>> elem;
+        vector<int> elem;
         for(int j=0;j<num_resource;j++){
             int num_allocated;
             fscanf(fp,"%d",&num_allocated);
             sum_allocated[j] += num_allocated; 
-            elem.push_back(make_pair(j,num_allocated));
+            elem.push_back(num_allocated);
         }
         allocated.push_back(elem);
     }
-    // for(int i =0;i<num_resource;i++) printf("%d",sum_allocated[i]);
+    
      for(int i=0;i<num_process;i++){
-         vector<pair<int,int>> elem;
+         vector<int> elem;
         for(int j=0;j<num_resource;j++){
             int num_requested;
             fscanf(fp,"%d",&num_requested);
-            elem.push_back(make_pair(j,num_requested));
+            elem.push_back(num_requested);
         }
         requested.push_back(elem);
     }
     fclose(fp);
 }
 int findUnblocked(int reductedProcess[]){
-    int findProcess;
-    int find = 0;
+    int findProcess = -1;
+    
     for(int i=0;i<num_process;i++){
-        if(reductedProcess[i] == 1) continue;
-        int unblockedCnt = 0;
-        for(int j=0;j<num_resource;j++){
-            printf("P%d -> R%d : %d %d %d\n",i,j,requested[i][j].second,resourceUnits[j],sum_allocated[j]);
-            if(requested[i][j].second <= (resourceUnits[j] - sum_allocated[j])){
-                unblockedCnt++;
+        bool satisfy = true;
+        if(reductedProcess[i] == 1) continue;     
+        for(int j=0;j<num_resource;j++){       
+            if(requested[i][j] > (resourceUnits[j] - sum_allocated[j])){
+                satisfy = false;
+                break;
             }
         }
-        if(unblockedCnt == num_resource){
-            find = 1;
+        if(satisfy){
             findProcess = i;
             break;
         }
-        
+        satisfy = true;        
     }
-    if(find == 0) return -1;
-    else {
-        return findProcess;
-    }
+    if(findProcess==-1) return -1;
+    else return findProcess;
 }
 int main(){
     input();
@@ -83,9 +75,9 @@ int main(){
         }
         else{
             for(int i=0;i<num_resource;i++){
-                sum_allocated[i] -= allocated[unblockedProcess][i].second;
+                sum_allocated[i] -= allocated[unblockedProcess][i];
             }
-            printf("The reducted Process is P%d\n",unblockedProcess+1);
+            
             reductedProcess[unblockedProcess] = 1; 
         }
     }
@@ -97,15 +89,6 @@ int main(){
         }
     }
     if(cnt == 0) printf("There is no Deadlocked Process!!\n");
-    // for(int i=0;i<num_resource;i++) printf("%d ",resourceUnits[i]);
-    // printf("\n"); 
-    // for(int i=0;i<num_process;i++){
-    //     for(auto it = requested[i].begin();it!=requested[i].end();it++){
-    //         printf("%d %d\n",it->first,it->second);
-    //     }
-    // }
-    // for(int i=0;i<num_process;i++){
-    //     if()
-    // }
+    
     return 0;
 }
