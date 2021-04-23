@@ -11,7 +11,7 @@ vector<int> sum_allocated;
 void input(){
     
     FILE *fp;
-    fp = fopen("input6.txt","r");
+    fp = fopen("input.txt","r");
     fscanf(fp,"%d %d",&num_process,&num_resource);
     
     for(int i=0;i<num_resource;i++){
